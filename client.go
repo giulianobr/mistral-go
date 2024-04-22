@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"os"
@@ -98,7 +98,7 @@ func (c *MistralClient) request(method string, jsonData map[string]interface{}, 
 	}
 
 	if resp.StatusCode >= 400 {
-		responseBytes, _ := ioutil.ReadAll(resp.Body)
+		responseBytes, _ := io.ReadAll(io.Reader(resp.Body))
 		return nil, fmt.Errorf("(HTTP Error %d) %s", resp.StatusCode, string(responseBytes))
 	}
 
@@ -107,7 +107,7 @@ func (c *MistralClient) request(method string, jsonData map[string]interface{}, 
 	}
 
 	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(io.Reader(resp.Body))
 	if err != nil {
 		return nil, err
 	}
